@@ -39,11 +39,11 @@ class ASDInterface : public QWidget{
 		void waveNao();
 	
 	private Q_SLOTS:
+		void on_WhoAmI_clicked();
+		void on_LearnName_clicked();
+		void on_LearnFace_clicked();
 		void on_Start_clicked();
-		void on_Command_clicked();
-		void on_Prompt_clicked();
 		void on_ShutDown_clicked();
-		void on_Bye_clicked();
 		void on_MyClock_overflow();
 
 	protected:

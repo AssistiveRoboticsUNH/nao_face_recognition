@@ -22,7 +22,7 @@ ASDInterface::ASDInterface(QWidget *parent) : QWidget(parent), ui(new Ui::ASDInt
 	client_stiff = n.serviceClient<std_srvs::Empty>("/body_stiffness/enable", 100); //service client to unstiffen nao
 	client_record_start = n.serviceClient<std_srvs::Empty>("/data_logger/start"); // service client to start rosbag
 	client_record_stop = n.serviceClient<std_srvs::Empty>("/data_logger/stop"); //service client to stop rosbag
-	sub_cam = n.subscribe<sensor_msgs::Image>("/nao_robot/camera/front/camera/image_raw", 100, &ASDInterface::imageCallback, this); //subcriber to get image
+	sub_cam = n.subscribe("/face_recognition/image_raw", 100, &ASDInterface::imageCallback, this); //subcriber to get image
 	sub_custom = n.subscribe("control_msgs", 100, &ASDInterface::controlCallback, this); // subscriber to get state status
 	pub_custom = n.advertise<custom_msgs::control_states>("/control_msgs", 100); // advertises state status
 
@@ -56,7 +56,7 @@ void ASDInterface::UpdateImage(){
 /* Paints the camera image and clock to the UI */
 void ASDInterface::paintEvent(QPaintEvent *event){
 	QPainter myPainter(this);
-	QPointF p(20, 250);
+	QPointF p(100, 80);
 	QPointF p1(435, 170);
 	myPainter.drawText(p1, MyClockTimetext); // Draws clock to ui
 	if(count >= 10){ // first few frames are corrupted, so cannot draw image until it gets atleast 10 frames of the video stream
@@ -64,35 +64,43 @@ void ASDInterface::paintEvent(QPaintEvent *event){
 	}
 }
 
+// When who am i  button clicked...
+//      Retrain system
+//      Run continuous face recognition
+void ASDInterface::on_WhoAmI_clicked(){
+	
+	// Prints that button was clocked 
+	ROS_INFO("Who Am I Button Clicked...\n");
+
+}
+
+// When learn name button clicked...
+//      NAO asks for your name
+//      Speech to text retrieves name
+void ASDInterface::on_LearnName_clicked(){
+	
+	// Prints that button was clocked 
+	ROS_INFO("Learn Name Button Clicked...\n");
+
+}
+
+// When learn face button clicked...
+//      Fetches name
+//      Takes training images of the person
+void ASDInterface::on_LearnFace_clicked(){
+	
+	// Prints that button was clocked 
+	ROS_INFO("Learn Face Button Clicked...\n");
+
+}
+
 // When start button clicked...
+//      Launch face recognition server
+//      Launch face recognition client
 void ASDInterface::on_Start_clicked(){
 	
 	// Prints that button was clocked 
 	ROS_INFO("Start Button Clicked...\n");
-
-}
-
-// When command button clicked...
-void ASDInterface::on_Command_clicked(){
-	
-	// Prints that button was clocked 
-	ROS_INFO("Command Button Clicked...\n");
-
-}
-
-// When prompt button clicked...
-void ASDInterface::on_Prompt_clicked(){
-	
-	// Prints that button was clocked 
-	ROS_INFO("Prompt Button Clicked...\n");
-
-}
-
-// When bye button clicked...
-void ASDInterface::on_Bye_clicked(){
-	
-	// Prints that button was clocked 
-	ROS_INFO("Bye Button Clicked...\n");
 
 }
 
@@ -122,8 +130,9 @@ void ASDInterface::timerEvent(QTimerEvent*) {
 /* Call back to store image data from camera using ROS and converts it to QImage */
 void ASDInterface::imageCallback(const sensor_msgs::ImageConstPtr& msg){
 	QImage myImage(&(msg->data[0]), msg->width, msg->height, QImage::Format_RGB888);
-	NaoImg = myImage.rgbSwapped();
-	count++;
+	//NaoImg = myImage.rgbSwapped();
+	NaoImg = myImage;
+    count++;
 }
 
 /* Loop rate to make NAO wait for i amount of seconds */

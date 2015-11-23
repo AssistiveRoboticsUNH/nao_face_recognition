@@ -1,17 +1,6 @@
 <launch>
-    <node name="asdinterface" pkg="asdinterface" type="asdinterface" />
-	<!-- <node name="audio_record" pkg="node_controllers" type="audio_record" /> -->
-	<!-- <node name="wave_nao" pkg="node_controllers" type="wave_nao" /> -->
-	<!-- <node name="export" pkg="rename" type="export" /> -->
-	<!-- <node name="rename" pkg="rename" type="rename" />	-->
 
-	<!--RECORDING-->
- 	<node pkg="node_controllers" name="data_logger" type="data_logger" output="screen">
-    		<!--See the 'rosbag record' manual for parameter description-->
-    		<param name="rosbag_record_args"
-      		   value="--output-prefix=session
-		   /nao_robot/camera/front/camera/image_raw"/>
-    		<param name="bag_path" value="$(env HOME)/bag"/>
-  	</node>
+    <!--Launches GUI-->
+    <node name="asdinterface" pkg="asdinterface" type="asdinterface" output="screen" />
 
 </launch>

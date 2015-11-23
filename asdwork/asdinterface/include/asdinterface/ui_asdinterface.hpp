@@ -19,10 +19,10 @@ class Ui_ASDInterface {
         /***************************************/
 
         // Initialize buttons and clock
-        QPushButton *Start;
-		QPushButton *Command;
-		QPushButton *Prompt;
-		QPushButton *Bye;
+        QPushButton *WhoAmI;
+		QPushButton *LearnName;
+		QPushButton *LearnFace;
+		QPushButton *Start;
 		QPushButton *ShutDown;
 		QLCDNumber *MyClock;
 	
@@ -42,11 +42,11 @@ class Ui_ASDInterface {
 
             /***************************************/
 
-            // Create and position start button
+            // Create and position who am i button
 
-			Start = new QPushButton(ASDInterface);
-			Start->setObjectName(QString("Start"));
-			Start->setGeometry(QRect(550, 50, 200, 80)); 
+			WhoAmI = new QPushButton(ASDInterface);
+			WhoAmI->setObjectName(QString("WhoAmI"));
+			WhoAmI->setGeometry(QRect(550, 50, 200, 80)); 
 	
             /***************************************/
 
@@ -58,27 +58,27 @@ class Ui_ASDInterface {
 		
             /***************************************/
 
-            // Create and position bye button
+            // Create and position learn name button
 
-            Bye = new QPushButton(ASDInterface);
-			Bye->setObjectName(QString("Bye"));
-			Bye->setGeometry(QRect(550, 265, 200, 40));
+            LearnName = new QPushButton(ASDInterface);
+			LearnName->setObjectName(QString("LearnName"));
+			LearnName->setGeometry(QRect(550, 265, 200, 40));
 	
             /***************************************/
 
-            // Create  and position prompt button
+            // Create and position learn face button
 
-            Prompt = new QPushButton(ASDInterface);
-			Prompt->setObjectName(QString("Prompt"));
-			Prompt->setGeometry(QRect(550, 310, 200, 40));
+            LearnFace = new QPushButton(ASDInterface);
+			LearnFace->setObjectName(QString("LearnFace"));
+			LearnFace->setGeometry(QRect(550, 310, 200, 40));
 	
             /***************************************/
 
-            // Create and position command button
+            // Create and position start button
 
-            Command = new QPushButton(ASDInterface);
-			Command->setObjectName(QString("Command"));
-			Command->setGeometry(QRect(50, 30, 425, 40));
+            Start = new QPushButton(ASDInterface);
+			Start->setObjectName(QString("Start"));
+			Start->setGeometry(QRect(50, 30, 425, 40));
 	
             /***************************************/
 
@@ -103,11 +103,11 @@ class Ui_ASDInterface {
         // Name window and buttons    
 		void retranslateUi(QWidget *ASDInterface){
 			ASDInterface->setWindowTitle(QApplication::translate("ASDInterface", "ASDInterface", 0));
+			WhoAmI->setText(QApplication::translate("ASDInterface", "Who Am I?", 0));
+			LearnName->setText(QApplication::translate("ASDInterface", "Learn Name", 0));
+			LearnFace->setText(QApplication::translate("ASDInterface", "Learn Face", 0));
 			Start->setText(QApplication::translate("ASDInterface", "Start", 0));
-			Command->setText(QApplication::translate("ASDInterface", "Command", 0));
-			Prompt->setText(QApplication::translate("ASDInterface", "Prompt", 0));
-			Bye->setText(QApplication::translate("ASDInterface", "Bye", 0));
-			ShutDown->setText(QApplication::translate("ASDInterface", "Shut_Down", 0));
+			ShutDown->setText(QApplication::translate("ASDInterface", "Shut Down", 0));
 		}
 
         /***************************************/
