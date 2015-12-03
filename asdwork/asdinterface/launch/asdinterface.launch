@@ -3,4 +3,9 @@
     <!--Launches GUI-->
     <node name="asdinterface" pkg="asdinterface" type="asdinterface" output="screen" />
 
+    <!--Launches Face Recognition-->
+    <node name="Fclient" pkg="face_recognition" type="Fclient" output="screen" />
+    <node name="Fserver" pkg="asdinterface" type="server_wrapper" />
+    
+
 </launch>

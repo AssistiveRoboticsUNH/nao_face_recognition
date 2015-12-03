@@ -20,6 +20,8 @@
 #include <fstream>
 #include <string>
 #include <custom_msgs/control_states.h>
+#include <face_recognition/FRClientGoal.h>
+#include <actionlib_msgs/GoalStatusArray.h>
 
 namespace Ui{
 	class ASDInterface;
@@ -31,18 +33,21 @@ class ASDInterface : public QWidget{
 	public:
 		explicit ASDInterface(QWidget *parent = 0);
 		~ASDInterface();
-		void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+		void imageCallback1(const sensor_msgs::ImageConstPtr& msg);
+		void imageCallback2(const sensor_msgs::ImageConstPtr& msg);
 		void controlCallback(const custom_msgs::control_states States);
-		void UpdateImage();
+        void frStatusCallback(const actionlib_msgs::GoalStatusArray& Status);
+        void UpdateImage();
 		void loopRate(int loop_rates);
 		std::string getTimeStamp();
 		void waveNao();
+        std::string name;
 	
 	private Q_SLOTS:
 		void on_WhoAmI_clicked();
 		void on_LearnName_clicked();
 		void on_LearnFace_clicked();
-		void on_Start_clicked();
+		void on_Reset_clicked();
 		void on_ShutDown_clicked();
 		void on_MyClock_overflow();
 
@@ -56,13 +61,14 @@ class ASDInterface : public QWidget{
 		QTimer *timer;
 		QString MyClockTimetext;
 		ros::NodeHandle n;
-		ros::Publisher pub_speak, pub_pose, pub_move, pub_custom;
+		ros::Publisher pub_speak, pub_pose, pub_move, pub_custom, pub_facerec;
 		ros::ServiceClient client_stiff, client_record_start, client_record_stop;
-		ros::Subscriber sub_cam, sub_custom;
+		ros::Subscriber sub_cam, sub_custom, sub_frstatus;
 		QImage NaoImg;
 		int count;
 		std::ofstream fout;
 		custom_msgs::control_states controlstate;
+        actionlib_msgs::GoalStatusArray current_status;
 };
 
 #endif

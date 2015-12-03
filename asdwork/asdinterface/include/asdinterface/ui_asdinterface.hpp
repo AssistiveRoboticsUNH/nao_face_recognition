@@ -22,7 +22,7 @@ class Ui_ASDInterface {
         QPushButton *WhoAmI;
 		QPushButton *LearnName;
 		QPushButton *LearnFace;
-		QPushButton *Start;
+		QPushButton *Reset;
 		QPushButton *ShutDown;
 		QLCDNumber *MyClock;
 	
@@ -76,9 +76,9 @@ class Ui_ASDInterface {
 
             // Create and position start button
 
-            Start = new QPushButton(ASDInterface);
-			Start->setObjectName(QString("Start"));
-			Start->setGeometry(QRect(50, 30, 425, 40));
+            Reset = new QPushButton(ASDInterface);
+			Reset->setObjectName(QString("Reset"));
+			Reset->setGeometry(QRect(50, 30, 425, 40));
 	
             /***************************************/
 
@@ -106,7 +106,7 @@ class Ui_ASDInterface {
 			WhoAmI->setText(QApplication::translate("ASDInterface", "Who Am I?", 0));
 			LearnName->setText(QApplication::translate("ASDInterface", "Learn Name", 0));
 			LearnFace->setText(QApplication::translate("ASDInterface", "Learn Face", 0));
-			Start->setText(QApplication::translate("ASDInterface", "Start", 0));
+			Reset->setText(QApplication::translate("ASDInterface", "Reset Camera", 0));
 			ShutDown->setText(QApplication::translate("ASDInterface", "Shut Down", 0));
 		}
 

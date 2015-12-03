@@ -1,0 +1,3 @@
+#!/bin/bash
+while ! rostopic list | grep -q /face_recognition/goal; do sleep 1; done
+rosrun face_recognition Fserver

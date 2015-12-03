@@ -2,7 +2,6 @@
 #include "../include/asdinterface/ui_asdinterface.hpp"
 #include <string.h>
 
-
 /* Class Constructor: Initializes all of the QT slots and widgets, and initializes all of the subscribers,
  * publishers, and services */
 ASDInterface::ASDInterface(QWidget *parent) : QWidget(parent), ui(new Ui::ASDInterface){
@@ -18,13 +17,18 @@ ASDInterface::ASDInterface(QWidget *parent) : QWidget(parent), ui(new Ui::ASDInt
 	ros::start();
 	count = 0; //sets count to 0 so program can go through ros::spinOnce 10 times to solve issue with seg fault
 	pub_speak = n.advertise<std_msgs::String>("/speech", 100); //publisher to make nao talk
-	pub_pose = n.advertise<naoqi_bridge_msgs::BodyPoseActionGoal>("/body_pose/goal", 100); //publisher to make nao switch poses
-	client_stiff = n.serviceClient<std_srvs::Empty>("/body_stiffness/enable", 100); //service client to unstiffen nao
-	client_record_start = n.serviceClient<std_srvs::Empty>("/data_logger/start"); // service client to start rosbag
-	client_record_stop = n.serviceClient<std_srvs::Empty>("/data_logger/stop"); //service client to stop rosbag
-	sub_cam = n.subscribe("/face_recognition/image_raw", 100, &ASDInterface::imageCallback, this); //subcriber to get image
+	//pub_pose = n.advertise<naoqi_bridge_msgs::BodyPoseActionGoal>("/body_pose/goal", 100); //publisher to make nao switch poses
+	//client_stiff = n.serviceClient<std_srvs::Empty>("/body_stiffness/enable", 100); //service client to unstiffen nao
+	//client_record_start = n.serviceClient<std_srvs::Empty>("/data_logger/start"); // service client to start rosbag
+	//client_record_stop = n.serviceClient<std_srvs::Empty>("/data_logger/stop"); //service client to stop rosbag
+	sub_cam = n.subscribe("/nao_robot/camera/top/camera/image_raw", 100, &ASDInterface::imageCallback1, this); //subcriber to get image
 	sub_custom = n.subscribe("control_msgs", 100, &ASDInterface::controlCallback, this); // subscriber to get state status
 	pub_custom = n.advertise<custom_msgs::control_states>("/control_msgs", 100); // advertises state status
+
+    pub_facerec = n.advertise<face_recognition::FRClientGoal>("/fr_order", 100);
+    sub_frstatus = n.subscribe("/face_recognition/status", 100, &ASDInterface::frStatusCallback, this);
+
+    name = "nobody";
 
 	/* Creates file path to put timestamps in txt document */
 	std::string file_path;
@@ -65,12 +69,33 @@ void ASDInterface::paintEvent(QPaintEvent *event){
 }
 
 // When who am i  button clicked...
-//      Retrain system
-//      Run continuous face recognition
+//      Retrain database on possible new images (order_id = 3)
+//      Run continuous face recognition (order_id = 1)
 void ASDInterface::on_WhoAmI_clicked(){
+
+    /************************************************/    
 	
-	// Prints that button was clocked 
-	ROS_INFO("Who Am I Button Clicked...\n");
+    // Retrain database...
+    
+    face_recognition::FRClientGoal command;
+
+    command.order_id = 3;
+    command.order_argument = "none";
+    pub_facerec.publish(command);
+
+    ros::Duration(2).sleep();
+    
+    /************************************************/    
+    
+    // Run continuous face recognition...
+
+    command.order_id = 1;
+    command.order_argument = "none";
+    pub_facerec.publish(command);
+ 
+    sub_cam = n.subscribe("/face_recognition/image_raw", 100, &ASDInterface::imageCallback2, this); //subcriber to get image
+ 
+    /************************************************/    
 
 }
 
@@ -78,46 +103,105 @@ void ASDInterface::on_WhoAmI_clicked(){
 //      NAO asks for your name
 //      Speech to text retrieves name
 void ASDInterface::on_LearnName_clicked(){
+			
+    /************************************************/    
+
+    // NAO asks for your name
+
+    std::cout << "What is your name?: " << std::endl;
+
+    /************************************************/    
+
+    // Learn name from std input
+
+    std::cin >> name;
+    std::cout << "Hello " << name << std::endl;
+    std::cout << "I never forget a face. Click the 'Learn Face' button" << std::endl;
+    std::cout << "so that I can learn what your face looks like!" << std::endl;
 	
-	// Prints that button was clocked 
-	ROS_INFO("Learn Name Button Clicked...\n");
+    /************************************************/    
 
 }
 
 // When learn face button clicked...
 //      Fetches name
-//      Takes training images of the person
+//      Takes training images of person
 void ASDInterface::on_LearnFace_clicked(){
-	
-	// Prints that button was clocked 
-	ROS_INFO("Learn Face Button Clicked...\n");
+		
+    /************************************************/    
+
+    // Fetch name... 
+    
+    face_recognition::FRClientGoal command;
+    command.order_argument = name;
+    
+    /************************************************/    
+    
+    // Take training images of person...
+
+    command.order_id = 2;
+    pub_facerec.publish(command);
+	 
+    sub_cam = n.subscribe("/face_recognition/image_raw", 100, &ASDInterface::imageCallback2, this); //subcriber to get image
+
+    /************************************************/    
 
 }
 
-// When start button clicked...
-//      Launch face recognition server
-//      Launch face recognition client
-void ASDInterface::on_Start_clicked(){
+// When reset button clicked...
+//      Return to normal camera view
+void ASDInterface::on_Reset_clicked(){
 	
-	// Prints that button was clocked 
-	ROS_INFO("Start Button Clicked...\n");
+    /************************************************/    
+	
+    // Return to normal camera view...
+    
+    face_recognition::FRClientGoal command;
+
+    sub_cam = n.subscribe("/nao_robot/camera/top/camera/image_raw", 100, &ASDInterface::imageCallback1, this); //subcriber to get image
+    
+    //command.order_id = 3;
+    //command.order_argument = "none";
+    //pub_facerec.publish(command);
+ 
+    /************************************************/    
 
 }
 
 // When shutdown button clicked...
+//      Shuts down nodes
 //      Shuts down ROS 
 //      Quits the program 
 void ASDInterface::on_ShutDown_clicked(){
 		
-	// Prints that button was clocked 
-	ROS_INFO("Shutdown Button Clicked...\n");
+    /************************************************/    
+	
+    // Exit Fserver...
+    
+    face_recognition::FRClientGoal command;
 
-	// publish shutdown to controlstate to get other nodes to terminate
+    command.order_id = 4;
+    command.order_argument = "none";
+    pub_facerec.publish(command);
+ 
+    /************************************************/    
+
+	// Exit asdinterface...
+
 	controlstate.shutdown = true;
 	pub_custom.publish(controlstate);
+ 
+    /************************************************/    
 
+    // Shuts down ROS
 	ros::shutdown();
+
+    /************************************************/    
+   
+    // Quits the program 
 	exit(0);
+ 
+    /************************************************/    
 
 }
 
@@ -128,10 +212,18 @@ void ASDInterface::timerEvent(QTimerEvent*) {
 }
 
 /* Call back to store image data from camera using ROS and converts it to QImage */
-void ASDInterface::imageCallback(const sensor_msgs::ImageConstPtr& msg){
+void ASDInterface::imageCallback1(const sensor_msgs::ImageConstPtr& msg){
 	QImage myImage(&(msg->data[0]), msg->width, msg->height, QImage::Format_RGB888);
-	//NaoImg = myImage.rgbSwapped();
-	NaoImg = myImage;
+	NaoImg = myImage.rgbSwapped();
+	//NaoImg = myImage;
+    count++;
+}
+
+/* Call back to store image data from camera using ROS and converts it to QImage */
+void ASDInterface::imageCallback2(const sensor_msgs::ImageConstPtr& msg){
+	QImage myImage(&(msg->data[0]), msg->width, msg->height, QImage::Format_RGB888);
+	NaoImg = myImage.rgbSwapped();
+	//NaoImg = myImage;
     count++;
 }
 
@@ -159,3 +251,11 @@ std::string ASDInterface::getTimeStamp(){
 void ASDInterface::controlCallback(const custom_msgs::control_states States){
 	controlstate = States;
 }
+
+
+/* Face Recognition Status Callback */
+void ASDInterface::frStatusCallback(const actionlib_msgs::GoalStatusArray& Status){
+    current_status = Status;
+}
+
+
