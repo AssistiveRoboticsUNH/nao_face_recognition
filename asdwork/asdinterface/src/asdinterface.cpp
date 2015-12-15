@@ -2,42 +2,58 @@
 #include "../include/asdinterface/ui_asdinterface.hpp"
 #include <string.h>
 
-/* Class Constructor: Initializes all of the QT slots and widgets, and initializes all of the subscribers,
- * publishers, and services */
+// Class Constructor
+//  Initializes QT slots and widgets, subscribers, 
+//  publishers, services and other various variables
 ASDInterface::ASDInterface(QWidget *parent) : QWidget(parent), ui(new Ui::ASDInterface){
 	
-	/* Sets up UI */
-	timer = new QTimer(this);
+    /************************************************/    
+
+	// Sets up qt slots and widgets
+
+    timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(on_MyClock_overflow()));
 	Mytimer.start(100, this);
 	timer->start(100);
 	ui->setupUi(this);
 
-	/* Sets up ROS */
-	ros::start();
-	count = 0; //sets count to 0 so program can go through ros::spinOnce 10 times to solve issue with seg fault
-	pub_speak = n.advertise<std_msgs::String>("/speech", 100); //publisher to make nao talk
-	//pub_pose = n.advertise<naoqi_bridge_msgs::BodyPoseActionGoal>("/body_pose/goal", 100); //publisher to make nao switch poses
-	//client_stiff = n.serviceClient<std_srvs::Empty>("/body_stiffness/enable", 100); //service client to unstiffen nao
-	//client_record_start = n.serviceClient<std_srvs::Empty>("/data_logger/start"); // service client to start rosbag
-	//client_record_stop = n.serviceClient<std_srvs::Empty>("/data_logger/stop"); //service client to stop rosbag
-	sub_cam = n.subscribe("/nao_robot/camera/top/camera/image_raw", 100, &ASDInterface::imageCallback1, this); //subcriber to get image
-	sub_custom = n.subscribe("control_msgs", 100, &ASDInterface::controlCallback, this); // subscriber to get state status
-	pub_custom = n.advertise<custom_msgs::control_states>("/control_msgs", 100); // advertises state status
+    /************************************************/    
 
-    pub_facerec = n.advertise<face_recognition::FRClientGoal>("/fr_order", 100);
-    sub_frstatus = n.subscribe("/face_recognition/status", 100, &ASDInterface::frStatusCallback, this);
+	// Initializes ROS and other variables
 
-    name = "nobody";
+    ros::start();       // initializes ros
+    name = "nobody";    // initializes name field to nobody
+	count = 0;          // initializes count to 0 
+                        // so program can go through ros::spinOnce 
+                        // 10 times to solve issue with seg fault
 
-	/* Creates file path to put timestamps in txt document */
-	std::string file_path;
-	//file_path = getenv("asdinterface");
-	//file_path += "data/timestamps.txt";
-	fout.open("~/asd_data/timestmaps/timestamps.txt", std::ofstream::out | std::ofstream::app);
-	std::string timestamp;
-	timestamp = getTimeStamp();
-	fout << "UI LAUNCHED: " << timestamp << "\n\n";
+    /************************************************/    
+
+    // Initializes publishers
+
+    pub_custom = n.advertise<custom_msgs::control_states>("/control_msgs", 100);                // for state change functionality
+    pub_facerec = n.advertise<face_recognition::FRClientGoal>("/fr_order", 100);                // for face recognition functionality
+	pub_speak = n.advertise<std_msgs::String>("/speech", 100);                                  // for nao speech functionality
+	//pub_pose = n.advertise<naoqi_bridge_msgs::BodyPoseActionGoal>("/body_pose/goal", 100);    // for nao pose functionality
+ 
+    /************************************************/    
+  
+    // Initializes subscribers
+
+	sub_cam = n.subscribe("/nao_robot/camera/top/camera/image_raw", 100, &ASDInterface::imageCallback1, this);  // gets raw image from camera
+	sub_custom = n.subscribe("/control_msgs", 100, &ASDInterface::controlCallback, this);                       // gets state status
+    //sub_frstatus = n.subscribe("/face_recognition/status", 100, &ASDInterface::frStatusCallback, this);       // gets face recognition status  
+
+    /************************************************/    
+
+    // Initializes service clients
+
+	//client_stiff = n.serviceClient<std_srvs::Empty>("/body_stiffness/enable", 100);   // service client to unstiffen nao
+	//client_record_start = n.serviceClient<std_srvs::Empty>("/data_logger/start");     // service client to start rosbag
+	//client_record_stop = n.serviceClient<std_srvs::Empty>("/data_logger/stop");       // service client to stop rosbag
+
+    /************************************************/    
+
 }
 
 /* Destructor: Frees space in memory where ui was allocated */
@@ -153,27 +169,41 @@ void ASDInterface::on_LearnFace_clicked(){
 void ASDInterface::on_Reset_clicked(){
 	
     /************************************************/    
-	
+
     // Return to normal camera view...
     
     face_recognition::FRClientGoal command;
 
     sub_cam = n.subscribe("/nao_robot/camera/top/camera/image_raw", 100, &ASDInterface::imageCallback1, this); //subcriber to get image
     
-    //command.order_id = 3;
-    //command.order_argument = "none";
-    //pub_facerec.publish(command);
- 
     /************************************************/    
 
 }
 
 // When shutdown button clicked...
+//      Nao says goodbye
+//      Nao returns to crouching position
 //      Shuts down nodes
 //      Shuts down ROS 
 //      Quits the program 
 void ASDInterface::on_ShutDown_clicked(){
-		
+			
+    /************************************************/    
+
+    // Nao says goodbye...    
+
+    std_msgs::String words;
+    words.data = "Goodbye";
+    pub_speak.publish(words);
+	
+    /************************************************/    
+
+    // Nao returns to crouching position
+
+    //naoqi_bridge_msgs::BodyPoseActionGoal pose;
+    //pose.goal_pose_name = "Crouch";
+    //pub_pose.publish(pose);
+
     /************************************************/    
 	
     // Exit Fserver...

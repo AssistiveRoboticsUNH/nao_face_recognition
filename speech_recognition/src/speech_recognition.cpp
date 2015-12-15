@@ -13,11 +13,22 @@ SpeechRec::~SpeechRec(){
 	stopRec();
 }
 
-void SpeechRec::setVocab(){
+void SpeechRec::setVocab(){ 
+
 	naoqi_bridge_msgs::SetSpeechVocabularyActionGoal msg;
-	msg.goal.words.push_back("hello"); //= "hello";
-	ROS_INFO_STREAM("MSG IS: " << msg.goal.words[0]);
-	pub_vocab.publish(msg);
+
+    msg.goal.words.push_back("hello");
+    pub_vocab.publish(msg);
+    msg.goal.words.push_back("blue");
+    pub_vocab.publish(msg);
+    msg.goal.words.push_back("goodbye");
+    pub_vocab.publish(msg);
+	
+    for (int i = 0; i < msg.goal.words.size(); i++) {
+        ROS_INFO_STREAM("MSG IS: " << msg.goal.words[i]);
+    }
+
+
 }
 
 void SpeechRec::startRec(){
@@ -32,23 +43,35 @@ void SpeechRec::stopRec(){
 }
 
 void SpeechRec::wordRec(){
-	if(received.words[0] == "hello" && received.confidence_values[0] > 0.5){
-		std_msgs::String response;
-		response.data = received.words[0] + " Recognized!";
-		ROS_INFO_STREAM("RECOGNIZED " << received.words[0] << " With a confidence level of: " << received.confidence_values[0]);
-		pub_talk.publish(response);
+		
+	naoqi_bridge_msgs::SetSpeechVocabularyActionGoal msg;
+    std_msgs::String response;
+    
+    for (int i = 0; i < msg.goal.words.size(); i++) {
+
+        if(received.words.back() == msg.goal.words[i]) {
+			response.data = received.words.back() + " Recognized!";
+	    	ROS_INFO_STREAM("RECOGNIZED " << received.words.back() << " With a confidence level of: " << received.confidence_values.back());
+		    pub_talk.publish(response);
+        }
+        
+        else{
+		    ros::Duration(1).sleep();
+	    }		
+
+    }
+
 		//stopRec();
 		//ros::Duration(2).sleep();
 		//ros::shutdown();
-	}
-	else{
-		ros::Duration(1).sleep();
-	}		
 }
 
 void SpeechRec::wordCallback(const nao_msgs::WordRecognized words){
-	received = words;
-	if(received.words[0] == "hello" && received.confidence_values[0] > 0.5){
-		wordRec();
-	}
+
+    received = words;
+
+    if(received.confidence_values.back() > 0.5) {
+        wordRec();
+    }
+
 }
