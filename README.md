@@ -24,13 +24,13 @@ More information on the face recognition API I used can be found [here] (https:/
 
 ## Playing the Game
 1. Click the "Learn Name" button.  This should cause a little prompt in the terminal from which the launch file was launched asking for your name.  Simply type in your name and press enter to continue.  Go back to the GUI interface window for the game.  
-2. Look straight into the NAO's eyes and press the "Learn Face" button.  This will enable the nao to start saving sample images of your face.  Try and move your face around slightly, iiling your head a little and making a few different faces so that the robot gets a good variety of samples.  
+2. Look straight into the NAO's eyes and press the "Learn Face" button.  This will enable the nao to start saving sample images of your face.  Try and move your face around slightly, tilting your head a little and making a few different faces so that the robot gets a good variety of samples.  
 
-3. When the robot is done recoding images, the camera feed will show the last image it took of your face.  To clear away this image, simply click the "Reset Camera" button to go back to viewing the camera feed from the nao's head cameras.
+3. When the robot is done recoding images, the camera feed will show the last image it took of your face.  To clear away this image, simply click the "Reset Camera" button to go back to a naormal camera view.
 
 4. Next, look straight into the nao's head cameras again, and click the "Who Am I?" button.  The video should draw a green box around your face with some blue text nearby labeling your face with the name you typed in earlier.  Note that this works best when you look straight at the nao robot.
 
-5. Repeat steps 1-4 with a couple of different people.  The game should create a library of all of these people, and, while the program can only recognize one main face at a time, if you change which people look into the camera, the robot shpould be able to recognize each different face with its respective name. 
+5. Repeat steps 1-4 with a couple of different people.  The game should create a library of all of these people, and, while the program can only recognize one main face at a time, if you change which people look into the camera, the robot should be able to recognize each different face with its respective name. 
 
 6.  If you wish to stop recognizing faces, simply click the "Reset Camera" button to return to the normal camera view.
 
