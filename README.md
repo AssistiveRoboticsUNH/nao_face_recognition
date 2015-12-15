@@ -7,11 +7,11 @@ More information on the face recognition API I used can be found [here] (https:/
 
 
 ## Launching the Game
-1. Make sure you have the correct packages installed for the NAO to work with ROS. They can be found in the tutorial here: http://wiki.ros.org/nao/Tutorials/Installation
+1. Make sure you have the correct packages installed for the NAO to work with ROS. They can be found in the tutorial [here] (http://wiki.ros.org/nao/Tutorials/Installation).
 
 2. The package that contains the correct nodes to launch are found in nao_bringup. If you are unsure if you have the correct package installed, you can type ```roscd nao_bringup``` which should navigate you to the package, if installed properly.  If not, go through the steps of installation again. In the nao_bringup package there should be a launch file called nao.launch. This is what you will be launching when you want to use the NAO with ROS.
 
-3. Once you are sure you have the correct package and launch file, make sure that the workspace is sourced. If you are unsure of how to go about this, the process of how to source workspaces can be found here: http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment
+3. Once you are sure you have the correct package and launch file, make sure that the workspace is sourced. If you are unsure of how to go about this, the process of how to source workspaces can be found [here] (http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
 
 4. To launch correctly, you must know what the NAO's IP address is. To retrieve it, double tap the chest button. The NAO should say something along the lines of "Hello, my name is NAO (or whatever name he is given). My internet address is 10.0.3.16" (or whatever IP he has). 
 
